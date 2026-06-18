@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Related Narrative</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f6f8fb; }
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
+    h1 { margin: 0 0 10px; }
+    .date { color: #6b7280; margin-bottom: 20px; }
+    .back { display: inline-block; margin-bottom: 20px; color: #2563eb; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back">← Back to Detector</a>
+  <div class="card">
+    <h1 id="title">Related Narrative</h1>
+    <div class="date" id="date"></div>
+    <p>This is a placeholder for the related narrative content. In a full implementation, this would load the actual article from your database or external source.</p>
+  </div>
+  <script>
+    var params = new URLSearchParams(location.search);
+    document.getElementById('title').textContent = params.get('title') || 'News Article';
+    var d = params.get('date');
+    if (d) document.getElementById('date').textContent = new Date(d).toLocaleDateString();
+  </script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manufactured Script Detector - Truth Index AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#f0f4f8;color:#1a202c;line-height:1.6;min-height:100vh}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+
+/* Header */
+header{background:linear-gradient(135deg,#1e3a8a,#3b82f6,#06b6d4);color:white;padding:40px;border-radius:24px;margin-bottom:30px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 10px 40px rgba(59,130,246,0.3)}
+header h1{font-size:2rem;font-weight:700}
+header p{opacity:0.9;font-size:1.1}
+.logo{display:flex;align-items:center;gap:15px}
+.logo-icon{width:50px;height:50px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.badge{padding:8px 16px;border-radius:20px;font-size:0.85rem;font-weight:600;background:#22c55e}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:1.2fr 0.8fr;gap:25px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+/* Cards */
+.card{background:#fff;border-radius:20px;padding:30px;box-shadow:0 4px 20px rgba(0,0,0,0.08)}
+.card h2{font-size:1.3rem;color:#1e3a8a;margin-bottom:20px;padding-bottom:15px;border-bottom:2px solid #e2e8f0}
+
+/* Tabs */
+.tabs{display:flex;gap:10px;margin-bottom:20px}
+.tab{padding:12px 24px;border:2px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;font-weight:600;color:#64748b;transition:all 0.3s}
+.tab.active{background:#3b82f6;color:#fff;border-color:#3b82f6}
+.tab:hover:not(.active){border-color:#3b82f6;color:#3b82f6}
+
+/* Input */
+textarea{width:100%;min-height:180px;padding:20px;border:2px solid #e2e8f0;border-radius:16px;font-size:1rem;font-family:inherit;resize:vertical;transition:border-color 0.3s}
+textarea:focus{outline:none;border-color:#3b82f6}
+input{width:100%;padding:16px;border:2px solid #e2e8f0;border-radius:12px;font-size:1rem}
+
+/* Buttons */
+.btn-group{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+.btn{padding:16px 32px;border:none;border-radius:14px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s}
+.btn-primary{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(59,130,246,0.4)}
+.btn-secondary{background:#64748b;color:#fff}
+.btn-secondary:hover{background:#475569}
+
+/* Quick Links */
+.quick-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+.quick-links button{padding:12px 18px;border:2px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;font-weight:600;transition:all 0.3s;display:flex;align-items:center;gap:8px}
+.quick-links button:hover{background:#3b82f6;color:#fff;border-color:#3b82f6}
+
+/* Truth Gauge */
+.gauge-container{position:relative;width:280px;height:280px;margin:30px auto}
+.gauge{width:100%;height:100%;border-radius:50%;background:conic-gradient(#ef4444 0deg 30deg,#f97316 30deg 60deg,#eab308 60deg 120deg,#22c55e 120deg 240deg,#eab308 240deg 300deg,#ef4444 300deg 360deg);box-shadow:0 0 50px rgba(239,68,68,0.4),inset 0 0 30px rgba(0,0,0,0.1)}
+.gauge-inner{position:absolute;top:30px;left:30px;width:220px;height:220px;background:linear-gradient(135deg,#1e3a8a,#1e40af);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 5px 20px rgba(0,0,0,0.3)}
+.gauge-score{font-size:4rem;font-weight:800;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.4);line-height:1}
+.gauge-label{font-size:1.3rem;font-weight:700;color:#fff;margin-top:5px}
+.gauge-sublabel{font-size:0.9rem;color:rgba(255,255,255,0.7);margin-top:3px}
+.needle{position:absolute;width:10px;height:100px;background:linear-gradient(to top,#1e293b,#475569);top:50%;left:50%;margin-left:-5px;margin-top:-100px;transform-origin:center bottom;border-radius:6px;transition:transform 1.2s cubic-bezier(0.34,1.56,0.64,1);z-index:100;box-shadow:0 4px 15px rgba(0,0,0,0.4)}
+.needle-dot{position:absolute;bottom:-14px;left:-14px;width:36px;height:36px;background:#1e293b;border-radius:50%;border:5px solid #fff;box-shadow:0 4px 15px rgba(0,0,0,0.3);z-index:101}
+
+/* Results */
+.result{margin-top:25px;padding:25px;border-radius:16px;animation:slideIn 0.5s ease-out}
+.result.warning{background:linear-gradient(135deg,#fef3c7,#fef9c3);border-left:5px solid #f59e0b}
+.result.good{background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-left:5px solid #22c55e}
+
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:20px 0}
+.stat-box{text-align:center;padding:20px;background:rgba(255,255,255,0.8);border-radius:14px}
+.stat-box b{font-size:2rem;font-weight:700;color:#1e3a8a;display:block}
+.stat-box span{font-size:0.9rem;color:#64748b}
+
+.evidence-list{list-style:none;padding:0}
+.evidence-list li{padding:12px 16px;background:rgba(255,255,255,0.8);border-radius:10px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.evidence-list li::before{content:'⚠️';font-size:1.2rem}
+
+/* Related */
+.related{list-style:none;padding:0;margin-top:15px}
+.related li{padding:16px;border:2px solid #e2e8f0;border-radius:12px;margin-bottom:10px;transition:all 0.3s}
+.related li:hover{border-color:#3b82f6;transform:translateX(5px)}
+.related a{color:#1e3a8a;text-decoration:none;font-weight:600;font-size:1.05rem}
+.tag{display:inline-block;padding:4px 12px;border-radius:8px;font-size:0.75rem;margin-left:10px}
+.tag.similar{background:#fef3c7;color:#92400e}
+.tag.opposing{background:#dbeafe;color:#1e40af}
+
+.loading{text-align:center;padding:40px;color:#64748b;font-size:1.1}
+.loading::after{content:'';display:inline-block;width:24px;height:24px;border:3px solid #e2e8f0;border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite;margin-left:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Footer */
+footer{text-align:center;padding:30px;color:#64748b;font-size:0.9rem}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<div class="logo">
+<div class="logo-icon">🎯</div>
+<div>
+<h1>Manufactured Script Detector</h1>
+<p>AI-Powered Truth Analysis</p>
+</div>
+</div>
+<span class="badge">📝 Local Mode</span>
+</header>
+
+<div class="grid">
+<!-- Left Card - Input -->
+<div class="card">
+<h2>📰 Analyze News</h2>
+
+<div class="tabs">
+<button class="tab active" onclick="switchTab('text', this)">📝 Text</button>
+<button class="tab" onclick="switchTab('url', this)">🔗 URL</button>
+</div>
+
+<div id="input-text">
+<textarea id="news-text" placeholder="Paste news article text here to analyze for manufactured narratives, bias, and manipulation..."></textarea>
+</div>
+
+<div id="input-url" style="display:none;">
+<input type="url" id="news-url" placeholder="Enter news URL or RSS feed...">
+<button class="btn btn-secondary" onclick="fetchURL()">🔗 Fetch</button>
+<div style="margin-top:15px;">
+<p style="font-size:0.9rem;color:#64748b;margin-bottom:10px;">📡 Live News via API:</p>
+<div class="quick-links">
+<button onclick="fetchNewsAPI('bbc')">🇺🇸 BBC</button>
+<button onclick="fetchNewsAPI('cnn')">🇺🇸 CNN</button>
+<button onclick="fetchNewsAPI('reuters')">🌍 Reuters</button>
+<button onclick="fetchNewsAPI('guardian')">🇬🇧 Guardian</button>
+<button onclick="fetchNewsAPI('fox')">🦊 Fox</button>
+<button onclick="fetchNewsAPI('dw')">🇩🇪 DW</button>
+</div>
+<p style="font-size:0.9rem;color:#64748b;margin:15px 0 10px;">📻 RSS Feeds:</p>
+<div class="quick-links">
+<button onclick="quickRSS('bbc')">📰 BBC RSS</button>
+<button onclick="quickRSS('cnn')">📰 CNN RSS</button>
+<button onclick="quickRSS('reuters')">📰 Reuters</button>
+<button onclick="quickRSS('guardian')">📰 Guardian</button>
+</div>
+</div>
+</div>
+
+<div class="btn-group">
+<button class="btn btn-primary" onclick="analyze()">🔍 Analyze Narrative</button>
+<button class="btn btn-secondary" onclick="test()">🧪 Test Sample</button>
+</div>
+
+<p class="loading" id="loading">Analyzing...</p>
+<div id="results"></div>
+</div>
+
+<!-- Right Card - Gauge & Links -->
+<div class="card">
+<h2>🎯 Truth Index</h2>
+
+<div class="gauge-container">
+<div class="gauge"></div>
+<div class="needle" id="needle"></div>
+<div class="needle-dot"></div>
+<div class="gauge-inner">
+<div class="gauge-score" id="truth-score">--</div>
+<div class="gauge-label" id="truth-label">TRUTH</div>
+<div class="gauge-sublabel" id="truth-sublabel">INDEX</div>
+</div>
+<div style="position:absolute;top:5px;left:50%;transform:translateX(-50%);color:#fff;font-size:0.7rem;font-weight:700;">HIGH</div>
+<div style="position:absolute;bottom:5px;left:50%;transform:translateX(-50%);color:#fff;font-size:0.7rem;font-weight:700;">LOW</div>
+</div>
+
+<h2 style="margin-top:30px;">📰 Quick Links</h2>
+<div class="quick-links">
+<button onclick="quickLink('bbc')">🇬🇧 BBC</button>
+<button onclick="quickLink('cnn')">🇺🇸 CNN</button>
+<button onclick="quickLink('dw')">🇩🇪 DW</button>
+<button onclick="quickLink('aljazeera')">🇶🇦 Al Jazeera</button>
+<button onclick="quickLink('rt')">🇷🇺 RT</button>
+<button onclick="quickLink('reuters')">🇬🇧 Reuters</button>
+<button onclick="quickLink('guardian')">🇬🇧 Guardian</button>
+<button onclick="quickLink('fox')">🇺🇸 Fox</button>
+<button onclick="quickLink('msnbc')">🇺🇸 MSNBC</button>
+</div>
+</div>
+</div>
+
+<footer>🔍 Local Analysis Works Without API • AI Features With HuggingFace Token</footer>
+</div>
+
+<script>
+// ===== CONFIG =====
+var NEWS_API_KEY = '2f55f72bc2734c1e96a73df18d3e4321';
+function analyzeLocal(text){
+var score=0.25,evidence=[];
+var words=text.toLowerCase().split(/\s+/);
+var wc={};
+words.forEach(function(w){w=w.replace(/[^a-z]/g,'');if(w.length>5)wc[w]=(wc[w]||0)+1});
+for(var w in wc)if(wc[w]>2){score+=0.08;evidence.push('Repeated: '+w+' ('+wc[w]+'x)')}
+var emo=['shocking','disaster','crisis','emergency','urgent','must','warning','catastrophe','devastating'];
+emo.forEach(function(w){if(text.toLowerCase().indexOf(w)>-1){score+=0.05;evidence.push('Emotional: '+w)}});
+if(/experts say|sources say/.test(text.toLowerCase())){score+=0.08;evidence.push('Vague attribution')}
+if(/\d+%|\$\d+/.test(text)){score+=0.04;evidence.push('Statistics')}
+if(text.length>300&&!/however|but|although/.test(text.toLowerCase())){score+=0.06;evidence.push('One-sided narrative')}
+score=Math.min(score,0.95);
+return{score:score,isManufactured:score>0.35,evidence:evidence.length?evidence:['Standard content']};
+}
+
+function analyze(){
+var text=document.getElementById('news-text').value;
+if(!text||text.trim().length<10){alert('Enter text to analyze');return}
+document.getElementById('loading').style.display='block';
+document.getElementById('results').innerHTML='';
+setTimeout(function(){
+var r=analyzeLocal(text);
+var truth=r.score*100;
+document.getElementById('truth-score').textContent=truth.toFixed(0);
+var risk=truth>65?'HIGH RISK':truth>35?'MEDIUM RISK':'LOW RISK';
+var color=truth>65?'#ef4444':truth>35?'#f97316':'#22c55e';
+document.getElementById('truth-label').textContent=risk;
+document.getElementById('truth-label').style.color=color;
+document.getElementById('truth-sublabel').textContent=truth>65?'MANIPULATED':truth>35?'SUSPICIOUS':'CREDIBLE';
+var rot=-90+(truth/100)*180;
+document.getElementById('needle').style.transform='rotate('+rot+'deg)';
+
+var resultClass=r.isManufactured?'warning':'good';
+var resultIcon=r.isManufactured?'⚠️':'✅';
+var resultTitle=r.isManufactured?'Manufactured Narrative Detected':'Likely Credible Content';
+
+var html='<div class="result '+resultClass+'">';
+html+='<h3 style="font-size:1.3rem;margin-bottom:15px;">'+resultIcon+' '+resultTitle+'</h3>';
+html+='<div class="stat-grid">';
+html+='<div class="stat-box"><b>'+truth.toFixed(0)+'%</b><span>Risk Score</span></div>';
+html+='<div class="stat-box"><b>'+r.evidence.length+'</b><span>Flags</span></div>';
+html+='<div class="stat-box"><b>'+(r.isManufactured?'HIGH':'LOW')+'</b><span>Assessment</span></div>';
+html+='<div class="stat-box"><b>Local</b><span>Mode</span></div>';
+html+='</div>';
+html+='<p><b>Evidence Found:</b></p><ul class="evidence-list">';
+r.evidence.forEach(function(e){html+='<li>'+e+'</li>'});
+html+='</ul>';
+
+html+='<h3 style="margin-top:25px;">🔗 Related Narratives</h3><ul class="related">';
+html+='<li><a href="#" target="_blank">Related coverage from other outlets</a><span class="tag similar">Similar</span></li>';
+html+='<li><a href="#" target="_blank">Opposing viewpoint analysis</a><span class="tag opposing">Opposing</span></li>';
+html+='<li><a href="#" target="_blank">Fact-check report</a><span class="tag similar">Fact Check</span></li>';
+html+='</ul>';
+
+document.getElementById('results').innerHTML=html;
+document.getElementById('loading').style.display='none';
+},600);
+}
+
+// ===== UI =====
+var currentInput='text';
+function switchTab(type, btn){
+currentInput=type;
+document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+btn.classList.add('active');
+document.getElementById('input-text').style.display=type==='text'?'block':'none';
+document.getElementById('input-url').style.display=type==='url'?'block':'none';
+}
+
+function quickLink(source){
+var urls={bbc:'https://www.bbc.com/news',cnn:'https://www.cnn.com',dw:'https://www.dw.com',aljazeera:'https://www.aljazeera.com',rt:'https://www.rt.com',reuters:'https://www.reuters.com',guardian:'https://www.theguardian.com',fox:'https://www.foxnews.com',msnbc:'https://www.msnbc.com'};
+document.getElementById('news-url').value=urls[source]||'';
+switchTab('url');
+}
+
+function quickRSS(source){
+var rss={bbc:'http://feeds.bbci.co.uk/news/rss.xml',cnn:'http://rss.cnn.com/rss/edition.rss',reuters:'https://www.reutersagency.com/feed/',guardian:'https://www.theguardian.com/world/rss'};
+document.getElementById('news-url').value=rss[source]||'';
+switchTab('url');
+document.getElementById('loading').style.display='block';
+document.getElementById('loading').textContent='Fetching RSS feed...';
+fetchRSS(rss[source]);
+}
+
+async function fetchURL(){
+var url=document.getElementById('news-url').value;
+if(!url){alert('Enter URL');return}
+document.getElementById('loading').style.display='block';
+document.getElementById('loading').textContent='Attempting to fetch...';
+try{
+var res=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent(url));
+if(!res.ok)throw new Error('Network error');
+var data=await res.json();
+if(data.contents && data.contents.length > 100){
+document.getElementById('news-text').value=data.contents.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().substring(0,4000);
+switchTab('text');
+document.getElementById('loading').textContent='✅ Fetched! Click Analyze';
+}else{throw new Error('Empty content')}
+}catch(e){
+document.getElementById('loading').innerHTML='⚠️ Cannot fetch directly due to website protections.<br><br><b>Use RSS feeds instead:</b><br>Click BBC/CNN/Reuters RSS buttons above';
+setTimeout(function(){document.getElementById('loading').style.display='none';},8000);
+}
+}
+
+async function fetchRSS(rssUrl){
+try{
+var res=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rssUrl));
+var data=await res.json();
+if(data.status==='ok' && data.items && data.items.length>0){
+var titles=data.items.slice(0,5).map(function(i){return i.title;}).join('. ');
+document.getElementById('news-text').value='Latest headlines: '+titles;
+switchTab('text');
+document.getElementById('loading').textContent='✅ Got headlines! Click Analyze';
+}else{throw new Error('No data')}
+}catch(e){
+document.getElementById('loading').innerHTML='⚠️ RSS unavailable. Try NewsAPI below.';
+setTimeout(function(){document.getElementById('loading').style.display='none';},8000);
+}
+}
+
+async function fetchNewsAPI(source){
+document.getElementById('loading').style.display='block';
+document.getElementById('loading').textContent='Fetching latest news...';
+try{
+var endpoints={bbc:'top-headlines?country=us',cnn:'everything?q=latest',reuters:'top-headlines?category=world',guardian:'everything?q=world',fox:'everything?q=fox',dw:'everything?q=germany'};
+var url='https://newsapi.org/v2/'+(endpoints[source]||'top-headlines?country=us')+'&apiKey='+NEWS_API_KEY;
+var res=await fetch(url);
+var data=await res.json();
+if(data.articles && data.articles.length>0){
+var headlines=data.articles.slice(0,8).map(function(a){return a.title;}).join('. ');
+document.getElementById('news-text').value='📰 Latest '+source.toUpperCase()+' Headlines:\n\n'+headlines;
+switchTab('text');
+document.getElementById('loading').textContent='✅ Got headlines! Click Analyze';
+}else{
+document.getElementById('loading').innerHTML='⚠️ No news found. Try another source.';
+}
+}catch(e){
+document.getElementById('loading').innerHTML='⚠️ API Error: '+e.message;
+setTimeout(function(){document.getElementById('loading').style.display='none';},8000);
+}
+}
+
+function test(){
+document.getElementById('news-text').value='BREAKING: Experts are warning of an absolute CATASTROPHE! The economy is in complete DISASTER! Shocking new policies will DESTROY everything! According to anonymous sources, this is unprecedented! Emergency measures MUST be taken NOW! Everyone must know about this! This is the most important story ever! Critics are warning but the government ignores!';
+analyze();
+}
+</script>
+</body>
+</html>
